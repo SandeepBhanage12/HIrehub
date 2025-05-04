@@ -1,0 +1,101 @@
+[
+    {
+      "id": "1",
+      "title": "Senior Software Engineer",
+      "company": "Tech Solutions Inc.",
+      "location": "San Francisco, CA",
+      "jobType": "Full-Time",
+      "experienceLevel": "Senior-Level",
+      "workMode": "On-site",
+      "postedDate": "1 May 2024",
+      "applicationLink": "https://techsolutions.com/careers"
+    },
+    {
+      "id": "2",
+      "title": "Product Manager",
+      "company": "Innovate Corp",
+      "location": "New York, NY",
+      "jobType": "Full-Time",
+      "experienceLevel": "Manager",
+      "workMode": "On-site",
+      "postedDate": "2 May 2024",
+      "applicationLink": "https://innovatecorp.com/jobs"
+    },
+    {
+      "id": "3",
+      "title": "Frontend Developer",
+      "company": "Webcraft Studios",
+      "location": "Remote",
+      "jobType": "Contract",
+      "experienceLevel": "Entry-Level",
+      "workMode": "Remote",
+      "postedDate": "3 May 2024",
+      "applicationLink": "https://webcraftstudios.com/apply"
+    },
+    {
+      "id": "4",
+      "title": " Software Engineer",
+      "company": "Tech Solutions Inc.",
+      "location": "San Francisco, CA",
+      "jobType": "Full-Time",
+      "experienceLevel": "Senior-Level",
+      "workMode": "On-site",
+      "postedDate": "4 May 2024",
+      "applicationLink": "https://techsolutions.com/careers"
+    },
+    {
+      "id": "5",
+      "title": " Manager",
+      "company": "Innovate Corp",
+      "location": "New York, NY",
+      "jobType": "Full-Time",
+      "experienceLevel": "Manager",
+      "workMode": "On-site",
+      "postedDate": "5 May 2024",
+      "applicationLink": "https://innovatecorp.com/jobs"
+    },
+    {
+      "id": "6",
+      "title": "Frontend Developer",
+      "company": "Webcraft Studios",
+      "location": "Remote",
+      "jobType": "Contract",
+      "experienceLevel": "Entry-Level",
+      "workMode": "Remote",
+      "postedDate": "6 May 2024",
+      "applicationLink": "https://webcraftstudios.com/apply"
+    },
+    {
+      "id": "7",
+      "title": "Senior Software Engineer",
+      "company": "Tech Solutions Inc.",
+      "location": "San Francisco, CA",
+      "jobType": "Full-Time",
+      "experienceLevel": "Senior-Level",
+      "workMode": "On-site",
+      "postedDate": "7 May 2024",
+      "applicationLink": "https://techsolutions.com/careers"
+    },
+    {
+      "id": "8",
+      "title": "Product Manager",
+      "company": "Innovate Corp",
+      "location": "New York, NY",
+      "jobType": "Full-Time",
+      "experienceLevel": "Manager",
+      "workMode": "On-site",
+      "postedDate": "8 May 2024",
+      "applicationLink": "https://innovatecorp.com/jobs"
+    },
+    {
+      "id": "9",
+      "title": "Frontend Developer",
+      "company": "Webcraft Studios",
+      "location": "Remote",
+      "jobType": "Contract",
+      "experienceLevel": "Entry-Level",
+      "workMode": "Remote",
+      "postedDate": "9 May 2024",
+      "applicationLink": "https://webcraftstudios.com/apply"
+    }
+]
