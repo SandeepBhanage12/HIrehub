@@ -58,3 +58,5 @@ const startServer = async () => {
 };
 
 startServer(); 
+
+const API_URL = 'http://localhost:5000/api'; 

@@ -85,6 +85,8 @@ const JobList = () => {
 
   const { user } = useAuth();
 
+  const jobListRef = React.useRef(null);
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -147,6 +149,9 @@ const JobList = () => {
 
   const handlePageChange = (event, value) => {
     setPage(value);
+    if (jobListRef.current) {
+      jobListRef.current.scrollTop = 0;
+    }
   };
 
   const pageCount = Math.ceil(filteredJobs.length / jobsPerPage);
@@ -224,15 +229,17 @@ const JobList = () => {
             position: 'sticky',
             top: 0,
             zIndex: 1200,
-            background: '#fafbfc',
+            background: 'transparent',
             pb: 2,
             width: '100%',
-            boxShadow: 2,
-            px: 2,
-            pt: 2,
-            borderRadius: 2,
-            border: '1px solid #e0e0e0',
-            mb: 2,
+            mb: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            boxShadow: 'none',
+            border: 'none',
+            px: 0,
+            pt: 0,
+            borderRadius: 0,
           }}>
             <TextField
               fullWidth
@@ -240,13 +247,13 @@ const JobList = () => {
               placeholder="Search jobs by title or company..."
               value={searchTerm}
               onChange={handleSearch}
-              sx={{ background: '#fff', borderRadius: 2, boxShadow: 1 }}
-              InputProps={{ style: { fontSize: 18 } }}
+              sx={{ background: '#fff', borderRadius: 4, boxShadow: 1, maxWidth: 900, mx: 'auto', maxHeight: 100 }}
+              InputProps={{ style: { fontSize: 18, borderRadius: 16 } }}
             />
           </Box>
           {/* Scrollable Job List */}
-          <Box sx={{ flex: 1, overflowY: 'auto', pr: 1, display: 'flex', flexDirection: 'column' }}>
-            <Grid container spacing={4} justifyContent="flex-start" alignItems="flex-end" sx={{ mt: 8, width: '100%', ml: 0, flex: 1 }}>
+          <Box ref={jobListRef} sx={{ flex: 1, overflowY: 'auto', pr: 1, display: 'flex', flexDirection: 'column' }}>
+            <Grid container spacing={4} justifyContent="flex-start" alignItems="flex-end" sx={{ mt: 2, width: '100%', ml: 0, flex: 1 }}>
               {paginatedJobs.map((job) => (
                 <Grid item xs={12} sm={6} md={4} key={job.id || job._id}>
                   <Card
@@ -291,6 +298,13 @@ const JobList = () => {
                         <LocationOnIcon sx={{ fontSize: 18, color: '#888' }} />
                         <Typography variant="body2" color="textSecondary">{job.location}</Typography>
                       </Stack>
+                      {/* Work Mode */}
+                      {job.workMode && (
+                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+                          <WorkIcon sx={{ fontSize: 18, color: '#888' }} />
+                          <Typography variant="body2" color="textSecondary">{job.workMode}</Typography>
+                        </Stack>
+                      )}
                       {/* Posted Date and Experience Level */}
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                         <CalendarTodayIcon sx={{ fontSize: 16, color: '#888', mr: 0.5 }} />

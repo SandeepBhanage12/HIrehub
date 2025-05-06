@@ -97,5 +97,39 @@
       "workMode": "Remote",
       "postedDate": "9 May 2024",
       "applicationLink": "https://webcraftstudios.com/apply"
-    }
+    },
+    {
+        "id": "10",
+        "title": "Data Engineer",
+        "company": "Webcraft Studios",
+        "location": "Remote",
+        "jobType": "Contract",
+        "experienceLevel": "Entry-Level",
+        "workMode": "Remote",
+        "postedDate": "9 May 2024",
+        "applicationLink": "https://webcraftstudios.com/apply"
+      },
+      {
+        "id": "11",
+        "title": "digital Marketing",
+        "company": "Webcraft Studios",
+        "location": "Remote",
+        "jobType": "Contract",
+        "experienceLevel": "Entry-Level",
+        "workMode": "Remote",
+        "postedDate": "9 May 2024",
+        "applicationLink": "https://webcraftstudios.com/apply"
+      },
+      {
+        "id": "12",
+        "title": "Backend Developer",
+        "company": "Webcraft Studios",
+        "location": "Remote",
+        "jobType": "Contract",
+        "experienceLevel": "Entry-Level",
+        "workMode": "Remote",
+        "postedDate": "9 May 2024",
+        "applicationLink": "https://webcraftstudios.com/apply"
+      }
+
 ]
