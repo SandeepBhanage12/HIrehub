@@ -234,12 +234,13 @@ const JobList = () => {
             width: '100%',
             mb: 1,
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
             boxShadow: 'none',
             border: 'none',
             px: 0,
             pt: 0,
-            borderRadius: 0,
+
           }}>
             <TextField
               fullWidth
@@ -247,7 +248,7 @@ const JobList = () => {
               placeholder="Search jobs by title or company..."
               value={searchTerm}
               onChange={handleSearch}
-              sx={{ background: '#fff', borderRadius: 4, boxShadow: 1, maxWidth: 900, mx: 'auto', maxHeight: 100 }}
+              sx={{ background: '#fff', borderRadius: 4, boxShadow: 1, maxWidth: 900, mx: 'auto', maxHeight: 100 ,marginLeft:12}}
               InputProps={{ style: { fontSize: 18, borderRadius: 16 } }}
             />
           </Box>
