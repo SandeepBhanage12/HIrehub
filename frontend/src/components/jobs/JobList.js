@@ -92,6 +92,7 @@ const JobList = () => {
       try {
         const response = await fetch('http://localhost:5000/api/jobs');
         const data = await response.json();
+        console.log('Fetched Jobs:', data); 
         setJobs(data);
         setFilteredJobs(data);
         setLoading(false);
@@ -104,23 +105,41 @@ const JobList = () => {
   }, []);
 
   useEffect(() => {
-    let filtered = jobs.filter(job =>
-      (job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase())))
-    );
-    // Apply filters
+    console.log('Jobs:', jobs);
+    jobs.forEach(job => console.log('Experience Level:', job.experienceLevel)); // Log each job's experienceLevel
+    console.log('Filters:', filters);
+  
+    let filtered = jobs;
+  
+    if (searchTerm) {
+      filtered = filtered.filter(job =>
+        (job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.location?.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+  
     if (filters.jobTypes.length > 0) {
-      filtered = filtered.filter(job => filters.jobTypes.includes(job.jobType));
+      filtered = filtered.filter(job =>
+        filters.jobTypes.map(type => type.toLowerCase()).includes(job.jobType?.toLowerCase())
+      );
     }
+  
     if (filters.experienceLevels.length > 0) {
-      filtered = filtered.filter(job => filters.experienceLevels.includes(job.experienceLevel));
+      filtered = filtered.filter(job =>
+        filters.experienceLevels.map(level => level.toLowerCase()).includes(job.experienceLevel?.toLowerCase())
+      );
     }
+  
     if (filters.workModes.length > 0) {
-      filtered = filtered.filter(job => filters.workModes.includes(job.workMode));
+      filtered = filtered.filter(job =>
+        filters.workModes.map(mode => mode.toLowerCase()).includes(job.workMode?.toLowerCase())
+      );
     }
+  
+    console.log('Filtered Jobs:', filtered);
     setFilteredJobs(filtered);
-    setPage(1); // Reset to first page on filter/search change
+    setPage(1);
   }, [jobs, searchTerm, filters]);
 
   const handleSearch = (e) => {
