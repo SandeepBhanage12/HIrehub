@@ -240,7 +240,7 @@ const JobList = () => {
             border: 'none',
             px: 0,
             pt: 0,
-
+            borderRadius: 0,
           }}>
             <TextField
               fullWidth
