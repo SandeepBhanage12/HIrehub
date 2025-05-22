@@ -14,7 +14,11 @@ import {
   Divider,
   Chip,
   Stack,
-  Pagination
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -40,28 +44,27 @@ const CARD_COLORS = [
 ];
 
 const filterOptions = {
-  jobTypes: ['Full-Time', 'Part-Time', 'Internship', 'Freelance', 'Contract'],
-  experienceLevels: ['Entry-Level', 'Mid-Level', 'Senior-Level', 'Manager'],
-  workModes: ['Remote', 'On-site', 'Hybrid']
+  jobTypes: ['full-time', 'part-time', 'Not specified'],
+  experienceLevels: ['senior', 'junior', 'Not specified'],
+  workModes: ['remote', 'on-site', 'hybrid', 'Not specified']
 };
 
 const getJobTypeColor = (type) => {
-  switch (type) {
-    case 'Full-Time': return 'primary';
-    case 'Part-Time': return 'secondary';
-    case 'Internship': return 'success';
-    case 'Freelance': return 'warning';
-    case 'Contract': return 'info';
+  switch (type?.toLowerCase()) {
+    case 'full-time': return 'primary';
+    case 'part-time': return 'secondary';
+    case 'internship': return 'success';
+    case 'freelance': return 'warning';
+    case 'contract': return 'info';
     default: return 'default';
   }
 };
 
 const getExperienceColor = (level) => {
-  switch (level) {
-    case 'Entry-Level': return 'success';
-    case 'Mid-Level': return 'info';
-    case 'Senior-Level': return 'error';
-    case 'Manager': return 'secondary';
+  switch (level?.toLowerCase()) {
+    case 'senior': return 'error';
+    case 'junior': return 'success';
+    case 'not specified': return 'default';
     default: return 'default';
   }
 };
@@ -82,6 +85,7 @@ const JobList = () => {
     workModes: []
   });
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState('newest');
 
   const { user } = useAuth();
 
@@ -90,7 +94,13 @@ const JobList = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/jobs');
+        const queryParams = new URLSearchParams();
+        if (searchTerm) queryParams.append('title', searchTerm);
+        if (filters.jobTypes.length > 0) queryParams.append('jobType', filters.jobTypes.join(','));
+        if (filters.experienceLevels.length > 0) queryParams.append('experienceLevel', filters.experienceLevels.join(','));
+        if (filters.workModes.length > 0) queryParams.append('workMode', filters.workModes.join(','));
+
+        const response = await fetch(`http://localhost:5000/api/jobs?${queryParams.toString()}`);
         const data = await response.json();
         setJobs(data);
         setFilteredJobs(data);
@@ -101,7 +111,7 @@ const JobList = () => {
       }
     };
     fetchJobs();
-  }, []);
+  }, [searchTerm, filters]);
 
   useEffect(() => {
     let filtered = jobs.filter(job =>
@@ -111,17 +121,25 @@ const JobList = () => {
     );
     // Apply filters
     if (filters.jobTypes.length > 0) {
-      filtered = filtered.filter(job => filters.jobTypes.includes(job.jobType));
+      filtered = filtered.filter(job => filters.jobTypes.includes(job.jobType?.toLowerCase()));
     }
     if (filters.experienceLevels.length > 0) {
-      filtered = filtered.filter(job => filters.experienceLevels.includes(job.experienceLevel));
+      filtered = filtered.filter(job => filters.experienceLevels.includes(job.experienceLevel?.toLowerCase()));
     }
     if (filters.workModes.length > 0) {
-      filtered = filtered.filter(job => filters.workModes.includes(job.workMode));
+      filtered = filtered.filter(job => filters.workModes.includes(job.workMode?.toLowerCase()));
     }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.postedDate || 0);
+      const dateB = new Date(b.postedDate || 0);
+      return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+
     setFilteredJobs(filtered);
-    setPage(1); // Reset to first page on filter/search change
-  }, [jobs, searchTerm, filters]);
+    setPage(1); // Reset to first page on filter/search/sort change
+  }, [jobs, searchTerm, filters, sortBy]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -152,6 +170,10 @@ const JobList = () => {
     if (jobListRef.current) {
       jobListRef.current.scrollTop = 0;
     }
+  };
+
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
   };
 
   const pageCount = Math.ceil(filteredJobs.length / jobsPerPage);
@@ -188,6 +210,19 @@ const JobList = () => {
                 CLEAR
               </Button>
             </Box>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Sort by Date</InputLabel>
+              <Select
+                value={sortBy}
+                label="Sort by Date"
+                onChange={handleSortChange}
+                size="small"
+              >
+                <MenuItem value="newest">Newest First</MenuItem>
+                <MenuItem value="oldest">Oldest First</MenuItem>
+              </Select>
+            </FormControl>
+            <Divider sx={{ my: 1 }} />
             <Typography variant="subtitle1" sx={{ mt: 1, mb: 0.5, fontWeight: 600 }}>Job Type</Typography>
             <FormGroup sx={{ mb: 1 }}>
               {filterOptions.jobTypes.map(type => (
@@ -361,4 +396,4 @@ const JobList = () => {
   );
 };
 
-export default JobList; 
+export default JobList;
