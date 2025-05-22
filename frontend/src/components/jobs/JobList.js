@@ -103,8 +103,33 @@ const JobList = () => {
         const response = await fetch(`http://localhost:5000/api/jobs?${queryParams.toString()}`);
         const data = await response.json();
         console.log('Fetched Jobs:', data); 
-        setJobs(data);
-        setFilteredJobs(data);
+        
+        // Sort the data immediately after fetching
+        const sortedData = [...data].sort((a, b) => {
+          const parseDate = (dateStr) => {
+            if (!dateStr) return new Date(0);
+            const months = {
+              'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+              'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11
+            };
+            try {
+              const [day, month, year] = dateStr.split(' ');
+              const monthIndex = months[month];
+              if (monthIndex === undefined) return new Date(0);
+              return new Date(parseInt(year), monthIndex, parseInt(day));
+            } catch (error) {
+              console.error('Error parsing date:', dateStr, error);
+              return new Date(0);
+            }
+          };
+
+          const dateA = parseDate(a.postedDate);
+          const dateB = parseDate(b.postedDate);
+          return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+
+        setJobs(sortedData);
+        setFilteredJobs(sortedData);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch jobs');
@@ -112,11 +137,11 @@ const JobList = () => {
       }
     };
     fetchJobs();
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, sortBy]); // Added sortBy to dependencies
 
   useEffect(() => {
     console.log('Jobs:', jobs);
-    jobs.forEach(job => console.log('Experience Level:', job.experienceLevel)); // Log each job's experienceLevel
+    jobs.forEach(job => console.log('Experience Level:', job.experienceLevel));
     console.log('Filters:', filters);
    
     let filtered = jobs;
@@ -130,28 +155,33 @@ const JobList = () => {
     }
    
     if (filters.jobTypes.length > 0) {
-      filtered = filtered.filter(job => filters.jobTypes.includes(job.jobType));
+      filtered = filtered.filter(job => {
+        const jobType = job.jobType?.toLowerCase() || 'not specified';
+        return filters.jobTypes.includes(jobType);
+      });
     }
    
     if (filters.experienceLevels.length > 0) {
-      filtered = filtered.filter(job => filters.experienceLevels.includes(job.experienceLevel));
+      filtered = filtered.filter(job => {
+        const experienceLevel = job.experienceLevel?.toLowerCase() || 'not specified';
+        return filters.experienceLevels.includes(experienceLevel);
+      });
     }
    
     if (filters.workModes.length > 0) {
-      filtered = filtered.filter(job => filters.workModes.includes(job.workMode));
+      filtered = filtered.filter(job => {
+        const workMode = job.workMode?.toLowerCase() || 'not specified';
+        return filters.workModes.includes(workMode);
+      });
     }
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.postedDate || 0);
-      const dateB = new Date(b.postedDate || 0);
-      return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
-    });
-
-    console.log('Filtered and Sorted Jobs:', filtered);
+    console.log('Filtered Jobs:', filtered.map(job => ({
+      title: job.title,
+      date: job.postedDate
+    })));
     setFilteredJobs(filtered);
-    setPage(1); // Reset to first page on filter/search/sort change
-  }, [jobs, searchTerm, filters, sortBy]);
+    setPage(1);
+  }, [jobs, searchTerm, filters]); // Removed sortBy from here since sorting is done in fetchJobs
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
