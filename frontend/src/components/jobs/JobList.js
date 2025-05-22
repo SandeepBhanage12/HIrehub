@@ -102,6 +102,7 @@ const JobList = () => {
 
         const response = await fetch(`http://localhost:5000/api/jobs?${queryParams.toString()}`);
         const data = await response.json();
+        console.log('Fetched Jobs:', data); 
         setJobs(data);
         setFilteredJobs(data);
         setLoading(false);
@@ -114,20 +115,30 @@ const JobList = () => {
   }, [searchTerm, filters]);
 
   useEffect(() => {
-    let filtered = jobs.filter(job =>
-      (job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase())))
-    );
-    // Apply filters
+    console.log('Jobs:', jobs);
+    jobs.forEach(job => console.log('Experience Level:', job.experienceLevel)); // Log each job's experienceLevel
+    console.log('Filters:', filters);
+   
+    let filtered = jobs;
+   
+    if (searchTerm) {
+      filtered = filtered.filter(job =>
+        (job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.location?.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+   
     if (filters.jobTypes.length > 0) {
-      filtered = filtered.filter(job => filters.jobTypes.includes(job.jobType?.toLowerCase()));
+      filtered = filtered.filter(job => filters.jobTypes.includes(job.jobType));
     }
+   
     if (filters.experienceLevels.length > 0) {
-      filtered = filtered.filter(job => filters.experienceLevels.includes(job.experienceLevel?.toLowerCase()));
+      filtered = filtered.filter(job => filters.experienceLevels.includes(job.experienceLevel));
     }
+   
     if (filters.workModes.length > 0) {
-      filtered = filtered.filter(job => filters.workModes.includes(job.workMode?.toLowerCase()));
+      filtered = filtered.filter(job => filters.workModes.includes(job.workMode));
     }
 
     // Apply sorting
@@ -137,6 +148,7 @@ const JobList = () => {
       return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
+    console.log('Filtered and Sorted Jobs:', filtered);
     setFilteredJobs(filtered);
     setPage(1); // Reset to first page on filter/search/sort change
   }, [jobs, searchTerm, filters, sortBy]);
