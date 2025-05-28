@@ -6,7 +6,7 @@ const fs    = require('fs');
 // polite 1s delay per robots.txt crawl‑delay
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// RemoteOK’s JSON API endpoint
+// RemoteOK's JSON API endpoint
 const API_URL = 'https://remoteok.io/api';
 
 // format ISO date to `D MMMM YYYY`
@@ -43,6 +43,18 @@ const scrapeJobs = async ({ maxJobs = 6000, writeFile = true } = {}) => {
       const tags = Array.isArray(job.tags) ? job.tags : [];
       const pick = re => tags.find(t => re.test(t)) || 'Not specified';
 
+      // Determine work mode based on location and tags
+      let workMode = 'Not specified';
+      if (tags.some(t => /Remote|Work from home|WFH/i.test(t))) {
+        workMode = 'remote';
+      } else if (tags.some(t => /On[- ]?site|Office|On[- ]?premise/i.test(t))) {
+        workMode = 'on-site';
+      } else if (tags.some(t => /Hybrid|Flexible|Part[- ]?remote/i.test(t))) {
+        workMode = 'hybrid';
+      } else if (job.location?.toLowerCase().includes('remote')) {
+        workMode = 'remote';
+      }
+
       return {
         id:               String(i + 1),
         title:            job.position        || 'Not specified',
@@ -50,7 +62,7 @@ const scrapeJobs = async ({ maxJobs = 6000, writeFile = true } = {}) => {
         location:         job.location        || 'Not specified',
         jobType:          pick(/Full[- ]?Time|Part[- ]?Time|Contract|Internship|Freelance/i),
         experienceLevel:  pick(/Senior|Mid|Junior/i),
-        workMode:         pick(/Remote|On[- ]?site|Hybrid/i),
+        workMode:         workMode,
         postedDate:       job.date && /^\d{1,2} [A-Za-z]+ \d{4}$/.test(job.date)
                              ? job.date
                              : formatDate(job.date),

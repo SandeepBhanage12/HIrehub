@@ -1,138 +1,70 @@
-// import React from 'react';
-// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-// import { AuthProvider, useAuth } from './context/AuthContext';
-// import Login from './components/auth/Login';
-// import Signup from './components/auth/Signup';
-// import JobList from './components/jobs/JobList';
-// import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-
-// const PrivateRoute = ({ children }) => {
-//   const { user } = useAuth();
-//   return user ? children : <Navigate to="/login" />;
-// };
-
-// const Navigation = () => {
-//   const { user, logout } = useAuth();
-
-//   return (
-//     <AppBar position="static">
-//       <Toolbar>
-//         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-//           Job Portal
-//         </Typography>
-//         {user ? (
-//           <Button color="inherit" onClick={logout}>
-//             Logout
-//           </Button>
-//         ) : (
-//           <Box>
-//             <Button color="inherit" href="/login">
-//               Login
-//             </Button>
-//             <Button color="inherit" href="/signup">
-//               Sign Up
-//             </Button>
-//           </Box>
-//         )}
-//       </Toolbar>
-//     </AppBar>
-//   );
-// };
-
-// function App() {
-//   return (
-//     <AuthProvider>
-//       <Router>
-//         <Navigation />
-//         <Container>
-//           <Routes>
-//             <Route path="/login" element={<Login />} />
-//             <Route path="/signup" element={<Signup />} />
-//             <Route
-//               path="/jobs"
-//               element={
-//                 <PrivateRoute>
-//                   <JobList />
-//                 </PrivateRoute>
-//               }
-//             />
-//             <Route path="/" element={<Navigate to="/jobs" />} />
-//           </Routes>
-//         </Container>
-//       </Router>
-//     </AuthProvider>
-//   );
-// }
-
-// export default App;
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/auth/Login';
-import Signup from './components/auth/Signup';
+import Register from './components/auth/Register';
 import JobList from './components/jobs/JobList';
-import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import Profile from './components/auth/Profile';
+import Header from './components/layout/Header';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+  },
+});
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return null;
   return user ? children : <Navigate to="/login" />;
 };
 
-const Navigation = () => {
-  const { user, logout } = useAuth();
+const AppContent = () => {
+  const { user } = useAuth();
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Job Portal
-        </Typography>
-        {user ? (
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        ) : (
-          <Box>
-            <Button color="inherit" href="/login">
-              Login
-            </Button>
-            <Button color="inherit" href="/signup">
-              Sign Up
-            </Button>
-          </Box>
-        )}
-      </Toolbar>
-    </AppBar>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/jobs" />} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to="/jobs" />} />
+        <Route
+          path="/jobs"
+          element={
+            <PrivateRoute>
+              <JobList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="/jobs" />} />
+      </Routes>
+    </Router>
   );
-};
-
-const HomeRedirect = () => {
-  const { user } = useAuth();
-  return <Navigate to={user ? "/jobs" : "/login"} />;
 };
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Navigation />
-        <Container>
-          <Routes>
-            <Route path="/" element={<HomeRedirect />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/jobs"
-              element={
-                <PrivateRoute>
-                  <JobList />
-                </PrivateRoute>
-              }
-            />
-          </Routes>
-        </Container>
-      </Router>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

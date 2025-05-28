@@ -12,12 +12,14 @@ import {
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,15 +36,39 @@ const Login = () => {
     setError('');
     setLoading(true);
 
+    // Validate form
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('All fields are required');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { success, error } = await login(formData.email, formData.password);
+      const { success, error } = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+
       if (success) {
         navigate('/jobs');
       } else {
-        setError(error || 'Login failed');
+        setError(error || 'Registration failed');
       }
     } catch (err) {
-      setError('An error occurred during login');
+      setError('An error occurred during registration');
     } finally {
       setLoading(false);
     }
@@ -52,7 +78,7 @@ const Login = () => {
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
-          Login
+          Register
         </Typography>
 
         {error && (
@@ -66,11 +92,22 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
+            id="name"
+            label="Full Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
-            autoFocus
             value={formData.email}
             onChange={handleChange}
           />
@@ -82,8 +119,19 @@ const Login = () => {
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
             value={formData.password}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            id="confirmPassword"
+            value={formData.confirmPassword}
             onChange={handleChange}
           />
           <Button
@@ -93,16 +141,16 @@ const Login = () => {
             sx={{ mt: 3, mb: 2, py: 1.5 }}
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Registering...' : 'Register'}
           </Button>
           <Box sx={{ textAlign: 'center' }}>
             <Link
               component="button"
               variant="body2"
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/login')}
               sx={{ textDecoration: 'none' }}
             >
-              Don't have an account? Register
+              Already have an account? Login
             </Link>
           </Box>
         </Box>
@@ -111,4 +159,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Register; 

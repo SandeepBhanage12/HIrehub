@@ -233,9 +233,9 @@ const JobList = () => {
       <Box sx={{ display: 'flex', minHeight: '100vh', background: '#fafbfc', width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
         {/* Sidebar Filters */}
         <Box sx={{
-          width: 220,
-          minWidth: 220,
-          maxWidth: 220,
+          width: 280,
+          minWidth: 280,
+          maxWidth: 280,
           p: 2,
           background: '#fff',
           borderRight: '1px solid #eee',
@@ -243,16 +243,17 @@ const JobList = () => {
           left: 0,
           top: `${HEADER_HEIGHT}px`,
           height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-          zIndex: 1201
+          zIndex: 1201,
+          overflowY: 'auto'
         }}>
-          <Paper elevation={21} sx={{ p: 2, background: 'inherit', boxShadow: 'none' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+          <Paper elevation={0} sx={{ p: 2, background: 'inherit' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Typography variant="h6">Filters</Typography>
               <Button size="small" color="inherit" endIcon={<CloseIcon />} onClick={handleClearFilters} sx={{ fontWeight: 600 }}>
                 CLEAR
               </Button>
             </Box>
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={{ mb: 3 }}>
               <InputLabel>Sort by Date</InputLabel>
               <Select
                 value={sortBy}
@@ -264,9 +265,9 @@ const JobList = () => {
                 <MenuItem value="oldest">Oldest First</MenuItem>
               </Select>
             </FormControl>
-            <Divider sx={{ my: 1 }} />
-            <Typography variant="subtitle1" sx={{ mt: 1, mb: 0.5, fontWeight: 600 }}>Job Type</Typography>
-            <FormGroup sx={{ mb: 1 }}>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 600 }}>Job Type</Typography>
+            <FormGroup sx={{ mb: 2 }}>
               {filterOptions.jobTypes.map(type => (
                 <FormControlLabel
                   key={type}
@@ -275,9 +276,9 @@ const JobList = () => {
                 />
               ))}
             </FormGroup>
-            <Divider sx={{ my: 1 }} />
-            <Typography variant="subtitle1" sx={{ mt: 1, mb: 0.5, fontWeight: 600 }}>Experience Level</Typography>
-            <FormGroup sx={{ mb: 1 }}>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 600 }}>Experience Level</Typography>
+            <FormGroup sx={{ mb: 2 }}>
               {filterOptions.experienceLevels.map(level => (
                 <FormControlLabel
                   key={level}
@@ -286,8 +287,8 @@ const JobList = () => {
                 />
               ))}
             </FormGroup>
-            <Divider sx={{ my: 1 }} />
-            <Typography variant="subtitle1" sx={{ mt: 1, mb: 0.5, fontWeight: 600 }}>Work Mode</Typography>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 600 }}>Work Mode</Typography>
             <FormGroup>
               {filterOptions.workModes.map(mode => (
                 <FormControlLabel
@@ -299,8 +300,21 @@ const JobList = () => {
             </FormGroup>
           </Paper>
         </Box>
+
         {/* Main Content */}
-        <Box sx={{ flexGrow: 1, pl: 13, pr: 10, py: 3, width: 'calc(100vw - 220px)', ml: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: `calc(100vh - ${HEADER_HEIGHT}px)` }}>
+        <Box sx={{ 
+          flexGrow: 1, 
+          pl: '280px', // Match sidebar width
+          pr: 3, 
+          py: 3, 
+          width: 'calc(100vw - 280px)', 
+          ml: 0, 
+          overflow: 'hidden', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+          mt: `${HEADER_HEIGHT}px`
+        }}>
           {/* Fixed Search Bar */}
           <Box sx={{
             position: 'sticky',
@@ -309,10 +323,10 @@ const JobList = () => {
             background: 'transparent',
             pb: 2,
             width: '100%',
-            mb: 1,
+            mb: 2,
             display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'flex-start',
+            justifyContent: 'center',
+            alignItems: 'center',
             boxShadow: 'none',
             border: 'none',
             px: 0,
@@ -325,34 +339,43 @@ const JobList = () => {
               placeholder="Search jobs by title or company..."
               value={searchTerm}
               onChange={handleSearch}
-              sx={{ background: '#fff', borderRadius: 4, boxShadow: 1, maxWidth: 900, mx: 'auto', maxHeight: 100 ,marginLeft:12}}
-              InputProps={{ style: { fontSize: 18, borderRadius: 16 } }}
+              sx={{ 
+                background: '#fff', 
+                borderRadius: 2, 
+                boxShadow: 1,
+                maxWidth: 800,
+                '& .MuiOutlinedInput-root': {
+                  height: 48,
+                  fontSize: '1rem'
+                }
+              }}
             />
           </Box>
+
           {/* Scrollable Job List */}
-          <Box ref={jobListRef} sx={{ flex: 1, overflowY: 'auto', pr: 1, display: 'flex', flexDirection: 'column' }}>
-            <Grid container spacing={4} justifyContent="flex-start" alignItems="flex-end" sx={{ mt: 2, width: '100%', ml: 0, flex: 1 }}>
+          <Box ref={jobListRef} sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+            <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
               {paginatedJobs.map((job) => (
-                <Grid item xs={12} sm={6} md={4} key={job.id || job._id}>
+                <Grid key={job.id || job._id} sx={{ 
+                  width: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(33.33% - 16px)' },
+                  mb: 3
+                }}>
                   <Card
                     sx={{
-                      height: `${CARD_HEIGHT}px`,
-                      width: `${CARD_WIDTH}px`,
-                      minHeight: `${CARD_HEIGHT}px`,
-                      minWidth: `${CARD_WIDTH}px`,
+                      height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       background: '#fff',
                       color: '#222',
-                      boxShadow: 3,
-                      borderRadius: 3,
+                      boxShadow: 2,
+                      borderRadius: 2,
                       border: '1px solid #e0e0e0',
                       transition: 'box-shadow 0.2s, transform 0.2s',
                       p: 2,
                       '&:hover': {
-                        boxShadow: 8,
-                        transform: 'translateY(-4px) scale(1.02)'
+                        boxShadow: 4,
+                        transform: 'translateY(-4px)'
                       }
                     }}
                   >
@@ -422,7 +445,7 @@ const JobList = () => {
               ))}
             </Grid>
             {pageCount > 1 && (
-              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2, mb: 2 }}>
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3, mb: 2 }}>
                 <Pagination
                   count={pageCount}
                   page={page}
