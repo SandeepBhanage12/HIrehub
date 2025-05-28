@@ -95,7 +95,11 @@ const JobList = () => {
     const fetchJobs = async () => {
       try {
         const queryParams = new URLSearchParams();
-        if (searchTerm) queryParams.append('title', searchTerm);
+        if (searchTerm) {
+          queryParams.append('title', searchTerm);
+          queryParams.append('company', searchTerm);
+          queryParams.append('location', searchTerm);
+        }
         if (filters.jobTypes.length > 0) queryParams.append('jobType', filters.jobTypes.join(','));
         if (filters.experienceLevels.length > 0) queryParams.append('experienceLevel', filters.experienceLevels.join(','));
         if (filters.workModes.length > 0) queryParams.append('workMode', filters.workModes.join(','));
@@ -336,7 +340,7 @@ const JobList = () => {
             <TextField
               fullWidth
               variant="outlined"
-              placeholder="Search jobs by title or company..."
+              placeholder="Search jobs by title, company, or location..."
               value={searchTerm}
               onChange={handleSearch}
               sx={{ 

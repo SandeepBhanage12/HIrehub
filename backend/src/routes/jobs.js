@@ -114,30 +114,31 @@ function loadJobsData() {
 
 router.get('/', async (req, res) => {
     try {
+        const jobsData = loadJobsData();
         const { title, jobType, experienceLevel, workMode } = req.query;
+        // We receive the search term under title, company, and location query params from frontend
+        const searchTerm = req.query.title || req.query.company || req.query.location || '';
         let filteredJobs = [...jobsData];
 
-        if (title) {
+        if (searchTerm) {
             filteredJobs = filteredJobs.filter(job => 
-                job.title.toLowerCase().includes(title.toLowerCase()) ||
-                job.company.toLowerCase().includes(title.toLowerCase())
+                (job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                 job.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                 job.location?.toLowerCase().includes(searchTerm.toLowerCase()))
             );
         }
-
         if (jobType) {
             const jobTypes = jobType.split(',');
             filteredJobs = filteredJobs.filter(job => 
                 jobTypes.includes(job.jobType?.toLowerCase() || 'not specified')
             );
         }
-
         if (experienceLevel) {
             const levels = experienceLevel.split(',');
             filteredJobs = filteredJobs.filter(job => 
                 levels.includes(job.experienceLevel?.toLowerCase() || 'not specified')
             );
         }
-
         if (workMode) {
             const modes = workMode.split(',');
             filteredJobs = filteredJobs.filter(job => 
