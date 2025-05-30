@@ -8,7 +8,9 @@ import {
   Button,
   Box,
   Alert,
-  Link
+  Link,
+  Checkbox,
+  FormControlLabel
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 
@@ -49,10 +51,27 @@ const Login = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
-          Login
+    <Box sx={{
+      minHeight: '100vh',
+      width: '100vw',
+      bgcolor: '#f9f9f9',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      py: 6
+    }}>
+      <Paper elevation={3} sx={{
+        maxWidth: 400,
+        width: '100%',
+        borderRadius: 2,
+        p: { xs: 3, sm: 4 },
+        textAlign: 'center',
+      }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, mb: 1 }}>
+          Welcome back
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          Sign in to your HireHub account
         </Typography>
 
         {error && (
@@ -61,19 +80,24 @@ const Login = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ textAlign: 'left' }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Email address</Typography>
           <TextField
             margin="normal"
             required
             fullWidth
             id="email"
-            label="Email Address"
             name="email"
             autoComplete="email"
             autoFocus
             value={formData.email}
             onChange={handleChange}
+            placeholder="Enter your email"
+            size="small"
+            sx={{ mb: 2 }}
           />
+          
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Password</Typography>
           <TextField
             margin="normal"
             required
@@ -85,29 +109,49 @@ const Login = () => {
             autoComplete="current-password"
             value={formData.password}
             onChange={handleChange}
+            placeholder="Enter your password"
+            size="small"
+            sx={{ mb: 1 }}
           />
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <FormControlLabel
+              control={<Checkbox size="small" />}
+              label="Remember me"
+              sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+            />
+            <Link component="button" variant="body2" onClick={() => navigate('/forgot-password')} sx={{ textDecoration: 'none', fontSize: '0.875rem' }}>
+              Forgot password?
+            </Link>
+          </Box>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, py: 1.5 }}
+            sx={{
+              mt: 2,
+              mb: 2,
+              py: 1,
+              bgcolor: '#222',
+              '&:hover': { bgcolor: '#444' },
+              textTransform: 'none',
+              fontSize: '1.1rem',
+              fontWeight: 600,
+            }}
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Signing In...' : 'Sign In'}
           </Button>
-          <Box sx={{ textAlign: 'center' }}>
-            <Link
-              component="button"
-              variant="body2"
-              onClick={() => navigate('/register')}
-              sx={{ textDecoration: 'none' }}
-            >
-              Don't have an account? Register
-            </Link>
+
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography variant="body2">
+              Don't have an account? <Link component="button" variant="body2" onClick={() => navigate('/register')} sx={{ textDecoration: 'none', fontWeight: 600 }}>Sign up here</Link>
+            </Typography>
           </Box>
         </Box>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

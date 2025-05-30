@@ -8,7 +8,14 @@ import {
   Button,
   Box,
   Alert,
-  Link
+  Link,
+  Grid,
+  Checkbox,
+  FormControlLabel,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 
@@ -19,66 +26,99 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.name) {
+      errors.name = 'First name is required';
+    }
+    if (!formData.email) {
+      errors.email = 'Email address is required';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email)) {
+      errors.email = 'Invalid email address';
+    }
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = 'Please confirm your new password';
+    } else if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    if (validateForm()) {
+      setError('');
+      setLoading(true);
 
-    // Validate form
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('All fields are required');
-      setLoading(false);
-      return;
-    }
+      try {
+        const { success, error } = await register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { success, error } = await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password
-      });
-
-      if (success) {
-        navigate('/jobs');
-      } else {
-        setError(error || 'Registration failed');
+        if (success) {
+          navigate('/jobs');
+        } else {
+          setError(error || 'Registration failed');
+        }
+      } catch (err) {
+        setError('An error occurred during registration');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError('An error occurred during registration');
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
-          Register
+    <Box sx={{
+      minHeight: '100vh',
+      width: '100vw',
+      bgcolor: '#f9f9f9',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      py: 6
+    }}>
+      <Paper elevation={3} sx={{
+        maxWidth: 400,
+        width: '100%',
+        borderRadius: 2,
+        p: { xs: 3, sm: 4 },
+        textAlign: 'center',
+      }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, mb: 1 }}>
+          Create your account
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          Join HireHub and start your job search
         </Typography>
 
         {error && (
@@ -87,75 +127,130 @@ const Register = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Full Name"
-            name="name"
-            autoComplete="name"
-            autoFocus
-            value={formData.name}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ textAlign: 'left' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>First name</Typography>
+              <TextField
+                required
+                fullWidth
+                id="name"
+                name="name"
+                autoComplete="given-name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="First name"
+                size="small"
+                error={!!validationErrors.name}
+                helperText={validationErrors.name}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Last name</Typography>
+              <TextField
+                required
+                fullWidth
+                id="lastName"
+                name="lastName"
+                autoComplete="family-name"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Last name"
+                size="small"
+                error={!!validationErrors.lastName}
+                helperText={validationErrors.lastName}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Email address</Typography>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                name="email"
+                autoComplete="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                size="small"
+                error={!!validationErrors.email}
+                helperText={validationErrors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Password</Typography>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Create a password"
+                size="small"
+                error={!!validationErrors.password}
+                helperText={validationErrors.password}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Confirm password</Typography>
+              <TextField
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password"
+                size="small"
+                error={!!validationErrors.confirmPassword}
+                helperText={validationErrors.confirmPassword}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox required size="small" />}
+                label={
+                  <Typography variant="body2" sx={{ '& a': { textDecoration: 'none', fontWeight: 600 } }}>
+                    I agree to the <Link href="#">Terms of Service</Link> and <Link href="#">Privacy Policy</Link>
+                  </Typography>
+                }
+              />
+            </Grid>
+          </Grid>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, py: 1.5 }}
+            sx={{
+              mt: 3,
+              mb: 2,
+              py: 1,
+              bgcolor: '#222',
+              '&:hover': { bgcolor: '#444' },
+              textTransform: 'none',
+              fontSize: '1.1rem',
+              fontWeight: 600,
+            }}
             disabled={loading}
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Creating Account...' : 'Create Account'}
           </Button>
-          <Box sx={{ textAlign: 'center' }}>
-            <Link
-              component="button"
-              variant="body2"
-              onClick={() => navigate('/login')}
-              sx={{ textDecoration: 'none' }}
-            >
-              Already have an account? Login
-            </Link>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2">
+              Already have an account? <Link component="button" variant="body2" onClick={() => navigate('/login')} sx={{ textDecoration: 'none', fontWeight: 600 }}>Sign in</Link>
+            </Typography>
           </Box>
         </Box>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

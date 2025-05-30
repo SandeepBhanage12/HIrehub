@@ -8,6 +8,8 @@ import Register from './components/auth/Register';
 import JobList from './components/jobs/JobList';
 import Profile from './components/auth/Profile';
 import Header from './components/layout/Header';
+import LandingPage from './components/layout/LandingPage';
+import ForgotPasswordRequest from './components/auth/ForgotPasswordRequest';
 
 const theme = createTheme({
   palette: {
@@ -31,10 +33,12 @@ const AppContent = () => {
 
   return (
     <Router>
-      <Header />
+      {user ? <Header /> : null}
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/jobs" />} />
         <Route path="/register" element={!user ? <Register /> : <Navigate to="/jobs" />} />
+        <Route path="/forgot-password" element={<ForgotPasswordRequest />} />
         <Route
           path="/jobs"
           element={
@@ -51,7 +55,7 @@ const AppContent = () => {
             </PrivateRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/jobs" />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
