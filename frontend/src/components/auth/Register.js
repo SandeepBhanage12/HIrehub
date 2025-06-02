@@ -365,17 +365,22 @@ const Register = () => {
     <Box sx={{
       minHeight: '100vh',
       width: '100vw',
+      backgroundImage: 'url(/login.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       bgcolor: '#f9f9f9',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      marginTop: '40px',
+      marginTop: '0px',
       py: 6
     }}>
       <Paper elevation={3} sx={{
         maxWidth: 450,
         width: '100%',
         borderRadius: 2,
+        bgcolor: 'rgba(255, 255, 255, 0.8)',
+        color: '#000',
         p: { xs: 3, sm: 4 },
         textAlign: 'center',
       }}>

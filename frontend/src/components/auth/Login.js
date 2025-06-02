@@ -54,7 +54,9 @@ const Login = () => {
     <Box sx={{
       minHeight: '100vh',
       width: '100vw',
-      bgcolor: '#f9f9f9',
+      backgroundImage: 'url(/login.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -66,6 +68,8 @@ const Login = () => {
         borderRadius: 2,
         p: { xs: 3, sm: 4 },
         textAlign: 'center',
+        bgcolor: 'rgba(255, 255, 255, 0.8)',
+        color: '#000',
       }}>
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, mb: 1 }}>
           Welcome back
