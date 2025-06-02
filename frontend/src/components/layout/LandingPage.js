@@ -19,7 +19,7 @@ import { Link as RouterLink } from 'react-router-dom';
 const HeroSection = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(45deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
   color: '#fff',
-  padding: theme.spacing(12, 0),
+  padding: theme.spacing(6, 0),
   textAlign: 'center',
   position: 'relative',
   overflow: 'hidden',
@@ -30,11 +30,13 @@ const FeatureCard = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   textAlign: 'center',
   boxShadow: 'none',
   border: '1px solid #e0e0e0',
   borderRadius: theme.shape.borderRadius,
+  width: 250,
+  height: 250,
 }));
 
 const LandingPage = () => {
@@ -65,7 +67,7 @@ const LandingPage = () => {
       </HeroSection>
 
       {/* Why Choose Section */}
-      <Box sx={{ py: 8, bgcolor: '#f9f9f9' }}>
+      <Box sx={{ py: 4, bgcolor: '#f9f9f9' }}>
         <Container maxWidth="lg">
           <Typography 
             variant="h4" 
@@ -75,8 +77,10 @@ const LandingPage = () => {
           >
             Why Choose JobScraper?
           </Typography>
-          <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} sm={6} md={6} lg={3}>
+          <Grid container spacing={4} justifyContent="center" sx={{ display: 'flex', flexDirection: 'row', overflowX: 'auto', pb: 2 }}>
+            <Grid item 
+              sx={{ flexShrink: 0 }}
+            >
               <FeatureCard>
                 <Icon sx={{ fontSize: 48, color: '#4158D0', mb: 2 }}><SearchIcon /></Icon>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Smart Search</Typography>
@@ -85,7 +89,9 @@ const LandingPage = () => {
                 </Typography>
               </FeatureCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={6} lg={3}>
+            <Grid item 
+              sx={{ flexShrink: 0 }}
+            >
               <FeatureCard>
                 <Icon sx={{ fontSize: 48, color: '#C850C0', mb: 2 }}><FilterListIcon /></Icon>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Advanced Filters</Typography>
@@ -94,7 +100,9 @@ const LandingPage = () => {
                 </Typography>
               </FeatureCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={6} lg={3}>
+            <Grid item 
+              sx={{ flexShrink: 0 }}
+            >
               <FeatureCard>
                 <Icon sx={{ fontSize: 48, color: '#FFCC70', mb: 2 }}><TrendingUpIcon /></Icon>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Real-Time Updates</Typography>
@@ -103,7 +111,9 @@ const LandingPage = () => {
                 </Typography>
               </FeatureCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={6} lg={3}>
+            <Grid item 
+              sx={{ flexShrink: 0 }}
+            >
               <FeatureCard>
                 <Icon sx={{ fontSize: 48, color: '#FF5733', mb: 2 }}><BookmarkIcon /></Icon>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Save & Track</Typography>
