@@ -14,6 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import HubIcon from '@mui/icons-material/Hub';
 import { Link as RouterLink } from 'react-router-dom';
 
 const HeroSection = styled(Box)(({ theme }) => ({
@@ -115,10 +116,10 @@ const LandingPage = () => {
               sx={{ flexShrink: 0 }}
             >
               <FeatureCard>
-                <Icon sx={{ fontSize: 48, color: '#FF5733', mb: 2 }}><BookmarkIcon /></Icon>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Save & Track</Typography>
+                <Icon sx={{ fontSize: 48, color: '#4158D0', mb: 2 }}><HubIcon /></Icon>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Multiple Source Aggregation</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                  Save favorite jobs and track your application progress.
+                  Find jobs from various platforms all in one place.
                 </Typography>
               </FeatureCard>
             </Grid>

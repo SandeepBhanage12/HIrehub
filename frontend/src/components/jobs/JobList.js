@@ -112,19 +112,35 @@ const JobList = () => {
         const sortedData = [...data].sort((a, b) => {
           const parseDate = (dateStr) => {
             if (!dateStr) return new Date(0);
+            // Handle 'X days ago' format
+            if (dateStr.toLowerCase().includes('days ago')) {
+              const daysAgoMatch = dateStr.match(/(\d+)\s*days ago/i);
+              if (daysAgoMatch && daysAgoMatch[1]) {
+                const days = parseInt(daysAgoMatch[1], 10);
+                const date = new Date();
+                date.setDate(date.getDate() - days);
+                return date;
+              }
+            }
+            // Handle date format (e.g., '2 June 2025')
             const months = {
               'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
               'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11
             };
             try {
-              const [day, month, year] = dateStr.split(' ');
-              const monthIndex = months[month];
-              if (monthIndex === undefined) return new Date(0);
-              return new Date(parseInt(year), monthIndex, parseInt(day));
+              const parts = dateStr.split(' ');
+              if (parts.length === 3) {
+                const [day, month, year] = parts;
+                const monthIndex = months[month];
+                if (monthIndex !== undefined) {
+                  return new Date(parseInt(year), monthIndex, parseInt(day));
+                }
+              }
             } catch (error) {
               console.error('Error parsing date:', dateStr, error);
-              return new Date(0);
             }
+            // Return a default invalid date if parsing fails
+            return new Date(0);
           };
 
           const dateA = parseDate(a.postedDate);
