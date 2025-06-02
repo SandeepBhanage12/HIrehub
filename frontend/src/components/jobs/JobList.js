@@ -385,13 +385,55 @@ const JobList = () => {
                   >
                     <CardContent sx={{ flexGrow: 1, pb: 1 }}>
                       {/* Title and Job Type Chip */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="h6" component="h2" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="h6" component="h2" sx={{ 
+                          fontWeight: 700, 
+                          color: '#1976d2',
+                          pr: 2,
+                          flex: 1
+                        }}>
                           {job.title}
                         </Typography>
-                        {job.jobType && (
-                          <Chip label={job.jobType} color={getJobTypeColor(job.jobType)} size="small" sx={{ fontWeight: 600 }} />
-                        )}
+                        <Box sx={{ 
+                          display: 'flex', 
+                          flexDirection: 'column',
+                          gap: 0.5,
+                          alignItems: 'flex-end'
+                        }}>
+                          {job.source && (
+                            <Chip 
+                              label={job.source} 
+                              color="info" 
+                              size="small" 
+                              sx={{ 
+                                fontWeight: 600,
+                                backgroundColor: job.source === 'Indeed' ? '#2557a7' : 
+                                              job.source === 'LinkedIn' ? '#0a66c2' : 
+                                              job.source === 'RemoteOK' ? '#2d3436' : '#1976d2',
+                                height: 20,
+                                '& .MuiChip-label': {
+                                  px: 1,
+                                  fontSize: '0.75rem'
+                                }
+                              }} 
+                            />
+                          )}
+                          {job.jobType && (
+                            <Chip 
+                              label={job.jobType} 
+                              color={getJobTypeColor(job.jobType)} 
+                              size="small" 
+                              sx={{ 
+                                fontWeight: 600,
+                                height: 20,
+                                '& .MuiChip-label': {
+                                  px: 1,
+                                  fontSize: '0.75rem'
+                                }
+                              }} 
+                            />
+                          )}
+                        </Box>
                       </Box>
                       {/* Company */}
                       <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
