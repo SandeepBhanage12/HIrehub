@@ -317,7 +317,6 @@ const JobList = () => {
           display: 'flex', 
           flexDirection: 'column', 
           height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-          mt: `${HEADER_HEIGHT}px`
         }}>
           {/* Fixed Search Bar */}
           <Box sx={{
@@ -325,9 +324,9 @@ const JobList = () => {
             top: 0,
             zIndex: 1200,
             background: 'transparent',
-            pb: 2,
+            pb: 1,
             width: '100%',
-            mb: 2,
+            mb: 1,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -351,13 +350,13 @@ const JobList = () => {
                 '& .MuiOutlinedInput-root': {
                   height: 48,
                   fontSize: '1rem'
-                }
+                },
               }}
             />
           </Box>
 
           {/* Scrollable Job List */}
-          <Box ref={jobListRef} sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+          <Box ref={jobListRef} sx={{ flex: 1, overflowY: 'auto', pr: 1, paddingTop: '64px' }}>
             <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
               {paginatedJobs.map((job) => (
                 <Grid key={job.id || job._id} sx={{ 
@@ -366,7 +365,8 @@ const JobList = () => {
                 }}>
                   <Card
                     sx={{
-                      height: '100%',
+                      height: CARD_HEIGHT,
+                      width: CARD_WIDTH,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',

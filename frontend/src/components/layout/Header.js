@@ -13,6 +13,37 @@ import {
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import PersonIcon from '@mui/icons-material/Person';
+import WorkIcon from '@mui/icons-material/Work';
+import HubIcon from '@mui/icons-material/Hub';
+
+const Logo = () => (
+  <Box sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: 1,
+    cursor: 'pointer'
+  }}>
+    <Box sx={{ 
+      display: 'flex', 
+      alignItems: 'center',
+      background: 'linear-gradient(45deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
+      borderRadius: '12px',
+      p: 0.5
+    }}>
+      <WorkIcon sx={{ color: '#fff', fontSize: 28 }} />
+    </Box>
+    <Typography
+      variant="h6"
+      sx={{
+        fontWeight: 700,
+        color: '#fff',
+        letterSpacing: '-0.5px'
+      }}
+    >
+      HireHub
+    </Typography>
+  </Box>
+);
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -39,16 +70,17 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar position="static" sx={{ 
+      zIndex: (theme) => theme.zIndex.drawer + 1,
+      background: 'linear-gradient(45deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderBottom: 'none'
+    }}>
       <Toolbar>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ flexGrow: 1, cursor: 'pointer' }}
-          onClick={() => navigate('/')}
-        >
-          Job Portal
-        </Typography>
+        <Box sx={{ flexGrow: 1 }} onClick={() => navigate('/')}>
+          <Logo />
+        </Box>
+        
         {user ? (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton
@@ -59,7 +91,11 @@ const Header = () => {
               onClick={handleMenu}
               color="inherit"
             >
-              <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+              <Avatar sx={{ 
+                width: 32, 
+                height: 32, 
+                background: 'linear-gradient(45deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)'
+              }}>
                 {user.name ? user.name[0].toUpperCase() : <PersonIcon />}
               </Avatar>
             </IconButton>
@@ -84,10 +120,28 @@ const Header = () => {
           </Box>
         ) : (
           <Box>
-            <Button color="inherit" onClick={() => navigate('/login')}>
+            <Button 
+              color="inherit" 
+              onClick={() => navigate('/login')}
+              sx={{ 
+                color: '#fff',
+                '&:hover': { color: '#eee' }
+              }}
+            >
               Login
             </Button>
-            <Button color="inherit" onClick={() => navigate('/register')}>
+            <Button 
+              variant="contained" 
+              onClick={() => navigate('/register')}
+              sx={{ 
+                ml: 1,
+                background: 'linear-gradient(45deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
+                  opacity: 0.9
+                }
+              }}
+            >
               Register
             </Button>
           </Box>

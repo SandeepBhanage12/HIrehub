@@ -33,7 +33,7 @@ const AppContent = () => {
 
   return (
     <Router>
-      {user ? <Header /> : null}
+      <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/jobs" />} />
