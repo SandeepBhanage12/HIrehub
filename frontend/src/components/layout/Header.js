@@ -115,6 +115,7 @@ const Header = () => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleProfile}>Profile</MenuItem>
+              <MenuItem onClick={() => { handleClose(); navigate('/saved-jobs'); }}>Saved Jobs</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>

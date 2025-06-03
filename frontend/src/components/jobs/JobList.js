@@ -18,7 +18,8 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel
+  InputLabel,
+  IconButton
 } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -27,8 +28,11 @@ import WorkIcon from '@mui/icons-material/Work';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useAuth } from '../../context/AuthContext';
 import { Global } from '@emotion/react';
+import axios from 'axios';
 
 const CARD_HEIGHT = 300; // Increased for uniformity
 const CARD_WIDTH = 360;  // Increased for uniformity
@@ -86,6 +90,7 @@ const JobList = () => {
   });
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState('newest');
+  const [savedJobIds, setSavedJobIds] = useState([]);
 
   const { user } = useAuth();
 
@@ -104,9 +109,9 @@ const JobList = () => {
         if (filters.experienceLevels.length > 0) queryParams.append('experienceLevel', filters.experienceLevels.join(','));
         if (filters.workModes.length > 0) queryParams.append('workMode', filters.workModes.join(','));
 
-        const response = await fetch(`http://localhost:5000/api/jobs?${queryParams.toString()}`);
-        const data = await response.json();
-        console.log('Fetched Jobs:', data); 
+        const response = await axios.get(`http://localhost:5000/api/jobs?${queryParams.toString()}`);
+        const data = response.data;
+        console.log('Fetched Jobs:', data);
         
         // Sort the data immediately after fetching
         const sortedData = [...data].sort((a, b) => {
@@ -157,7 +162,27 @@ const JobList = () => {
       }
     };
     fetchJobs();
-  }, [searchTerm, filters, sortBy]); // Added sortBy to dependencies
+  }, [searchTerm, filters, sortBy]);
+
+  useEffect(() => {
+    const fetchSavedJobIds = async () => {
+      if (!user) {
+        setSavedJobIds([]); // Clear saved jobs if user logs out
+        return;
+      }
+      try {
+        const response = await axios.get('http://localhost:5000/api/saved-jobs');
+        const savedJobsData = response.data;
+        const savedIds = savedJobsData.map(job => job.jobId);
+        setSavedJobIds(savedIds);
+        console.log('Fetched saved job IDs:', savedIds);
+      } catch (err) {
+        console.error('Error fetching saved job IDs:', err);
+      }
+    };
+ 
+    fetchSavedJobIds();
+  }, [user]);
 
   useEffect(() => {
     console.log('Jobs:', jobs);
@@ -176,8 +201,8 @@ const JobList = () => {
    
     if (filters.jobTypes.length > 0) {
       filtered = filtered.filter(job => {
-        const jobType = job.jobType?.toLowerCase() || 'not specified';
-        return filters.jobTypes.includes(jobType);
+        const jobType = job.jobType ? job.jobType.toLowerCase().replace(/[\s_]/g, '-') : 'not specified';
+        return filters.jobTypes.map(filter => filter.toLowerCase().replace(/\s/g, '-')).includes(jobType);
       });
     }
    
@@ -238,6 +263,38 @@ const JobList = () => {
     setSortBy(event.target.value);
   };
 
+  const handleSaveJob = async (job) => {
+    if (!user) {
+      console.log('Please log in to save jobs.');
+      return;
+    }
+
+    try {
+      // Format the job data to match the SavedJob model
+      const jobData = {
+        jobId: job.id,
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        jobType: job.jobType || 'Not specified',
+        experienceLevel: job.experienceLevel || 'Not specified',
+        workMode: job.workMode || 'Not specified',
+        postedDate: job.postedDate || 'Not specified',
+        applicationLink: job.applicationLink || 'Not specified',
+        source: job.source || 'Not specified'
+      };
+
+      const response = await axios.post('http://localhost:5000/api/saved-jobs/save-job', jobData);
+      setSavedJobIds([...savedJobIds, job.id]);
+      console.log('Job saved:', job.id);
+    } catch (err) {
+      console.error('Error saving job:', err);
+      if (err.response?.data?.error) {
+        console.error('Server error:', err.response.data.error);
+      }
+    }
+  };
+
   const pageCount = Math.ceil(filteredJobs.length / jobsPerPage);
   const paginatedJobs = filteredJobs.slice((page - 1) * jobsPerPage, page * jobsPerPage);
 
@@ -291,7 +348,7 @@ const JobList = () => {
               {filterOptions.jobTypes.map(type => (
                 <FormControlLabel
                   key={type}
-                  control={<Checkbox checked={filters.jobTypes.includes(type)} onChange={() => handleFilterChange('jobTypes', type)} />}
+                  control={<Checkbox checked={filters.jobTypes.map(filter => filter.toLowerCase().replace(/\s/g, '-')).includes(type.toLowerCase().replace(/\s/g, '-'))} onChange={() => handleFilterChange('jobTypes', type)} />}
                   label={type}
                 />
               ))}
@@ -416,6 +473,19 @@ const JobList = () => {
                           gap: 0.5,
                           alignItems: 'flex-end'
                         }}>
+                          {user && (
+                            <IconButton 
+                              size="small" 
+                              onClick={() => handleSaveJob(job)}
+                              sx={{ p: 0 }}
+                            >
+                              {savedJobIds.includes(job.id) ? (
+                                <BookmarkIcon sx={{ fontSize: 20, color: '#1976d2' }} />
+                              ) : (
+                                <BookmarkBorderIcon sx={{ fontSize: 20, color: '#888' }} />
+                              )}
+                            </IconButton>
+                          )}
                           {job.source && (
                             <Chip 
                               label={job.source} 

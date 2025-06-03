@@ -10,6 +10,7 @@ import Profile from './components/auth/Profile';
 import Header from './components/layout/Header';
 import LandingPage from './components/layout/LandingPage';
 import ForgotPasswordRequest from './components/auth/ForgotPasswordRequest';
+import SavedJobsList from './components/jobs/SavedJobsList';
 
 const theme = createTheme({
   palette: {
@@ -52,6 +53,14 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/saved-jobs"
+          element={
+            <PrivateRoute>
+              <SavedJobsList />
             </PrivateRoute>
           }
         />
