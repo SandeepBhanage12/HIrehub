@@ -1,13 +1,15 @@
+
+const puppeteer = require('puppeteer');
 const axios = require('axios');
 const fs = require('fs');
 const https = require('https');
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const REMOTEOK_API_URL = 'https://remoteok.io/api';
-const LINKEDIN_API_URL = 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=50&offset=0&title_filter=%22Software%20Engineer%22&location_filter=%22United%20States%22';
+
+const LINKEDIN_API_URL = 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=150&offset=0&title_filter=%22Software%20Engineer%22&location_filter=%22India%22';
 
 const HEADERS = {
-  'x-rapidapi-key': '804534cefemsh7289f3debdb6497p169c42jsn71de7e0663db',
+  'x-rapidapi-key': '04ed09ac76mshe5204add37db450p12891ejsn73b4acd25960',
   'x-rapidapi-host': 'linkedin-job-search-api.p.rapidapi.com',
   'User-Agent': 'Mozilla/5.0'
 };
@@ -20,6 +22,37 @@ function formatDate(isoString) {
   const year = d.getUTCFullYear();
   return `${day} ${month} ${year}`;
 }
+
+// Scrape RemoteOK using Puppeteer
+const scrapeRemoteOKWithPuppeteer = async () => {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  const page = await browser.newPage();
+
+  await page.goto('https://remoteok.io/remote-dev-jobs', {
+    waitUntil: 'networkidle2'
+  });
+
+  await page.waitForSelector('table#jobsboard');
+
+  const jobs = await page.evaluate(() => {
+    const rows = Array.from(document.querySelectorAll('tr.job'));
+
+    return rows.map((row) => {
+      const title = row.querySelector('h2')?.innerText || 'Not specified';
+      const company = row.querySelector('.companyLink span')?.innerText || 'Not specified';
+      const location = row.querySelector('.location')?.innerText || 'Not specified';
+      const tags = Array.from(row.querySelectorAll('.tag')).map(tag => tag.innerText);
+      const link = row.getAttribute('data-href')
+        ? `https://remoteok.io${row.getAttribute('data-href')}`
+        : 'Not specified';
+
+      return { title, company, location, tags, link, date: new Date().toISOString() };
+    });
+  });
+
+  await browser.close();
+  return jobs;
+};
 
 const normalizeRemoteOkJobs = (jobs, startId = 1) => {
   return jobs.map((job, i) => {
@@ -39,14 +72,14 @@ const normalizeRemoteOkJobs = (jobs, startId = 1) => {
 
     return {
       id: String(startId + i),
-      title: job.position || 'Not specified',
+      title: job.title || 'Not specified',
       company: job.company || 'Not specified',
       location: job.location || 'Not specified',
       jobType: pick(/Full[- ]?Time|Part[- ]?Time|Contract|Internship|Freelance/i),
       experienceLevel: pick(/Senior|Mid|Junior/i),
       workMode,
-      postedDate: job.date && /^\d{1,2} [A-Za-z]+ \d{4}$/.test(job.date) ? job.date : formatDate(job.date),
-      applicationLink: job.apply_url || job.url || 'Not specified',
+      postedDate: formatDate(job.date),
+      applicationLink: job.link || 'Not specified',
       source: 'RemoteOK'
     };
   });
@@ -67,18 +100,15 @@ const normalizeLinkedInJobs = (jobs, startId = 1) => {
   }));
 };
 
-// Normalize Indeed jobs for consistency and continuation of job IDs
 const normalizeIndeedJobs = (jobs, startId = 1) => {
   return jobs.map((job, i) => ({
     id: String(startId + i),
     title: job.title || 'Not specified',
     company: job.companyName || 'Not specified',
-    location: job.location?.city && job.location?.country 
-      ? `${job.location.city}, ${job.location.country}` 
-      : 'Not specified',
+    location: job.location?.formattedAddressLong || job.location?.formattedAddressShort || 'Not specified',
     jobType: Array.isArray(job.jobType) && job.jobType.length > 0 ? job.jobType[0] : 'Not specified',
-    experienceLevel: 'Not specified', // Not provided by API
-    workMode: 'Not specified', // Not provided by API
+    experienceLevel: 'Not specified',
+    workMode: 'Not specified',
     postedDate: job.age || 'Not specified',
     applicationLink: job.jobUrl || 'Not specified',
     source: 'Indeed'
@@ -92,7 +122,7 @@ const scrapeIndeedJobs = () => {
       hostname: 'indeed-scraper-api.p.rapidapi.com',
       path: '/api/job',
       headers: {
-        'x-rapidapi-key': '804534cefemsh7289f3debdb6497p169c42jsn71de7e0663db',
+        'x-rapidapi-key': '04ed09ac76mshe5204add37db450p12891ejsn73b4acd25960',
         'x-rapidapi-host': 'indeed-scraper-api.p.rapidapi.com',
         'Content-Type': 'application/json',
       },
@@ -102,25 +132,22 @@ const scrapeIndeedJobs = () => {
       scraper: {
         maxRows: 100,
         query: 'Developer',
-        location: 'San Francisco',
+        location: 'Bangalore',
         jobType: 'fulltime',
-        radius: '50',
+        radius: '100',
         sort: 'relevance',
         fromDays: '7',
-        country: 'us',
-      },
+        country: 'in',
+      }
     });
 
     const req = https.request(options, (res) => {
       let chunks = [];
 
-      res.on('data', (chunk) => {
-        chunks.push(chunk);
-      });
+      res.on('data', (chunk) => chunks.push(chunk));
 
       res.on('end', () => {
         const body = Buffer.concat(chunks).toString();
-
         try {
           const json = JSON.parse(body);
           if (json.returnvalue && Array.isArray(json.returnvalue.data)) {
@@ -134,10 +161,7 @@ const scrapeIndeedJobs = () => {
       });
     });
 
-    req.on('error', (e) => {
-      reject(e);
-    });
-
+    req.on('error', (e) => reject(e));
     req.write(postData);
     req.end();
   });
@@ -145,30 +169,28 @@ const scrapeIndeedJobs = () => {
 
 const scrapeJobs = async () => {
   try {
-    console.log('⏳ Fetching RemoteOK jobs…');
-    const remoteOkRes = await axios.get(REMOTEOK_API_URL, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    const remoteOkJobsRaw = remoteOkRes.data.slice(1);
-    const remoteOkJobs = normalizeRemoteOkJobs(remoteOkJobsRaw);
+    console.log('⏳ Scraping RemoteOK jobs via Puppeteer...');
+    const remoteOkRaw = await scrapeRemoteOKWithPuppeteer();
+    const remoteOkJobs = normalizeRemoteOkJobs(remoteOkRaw);
 
     await sleep(1000);
 
-    console.log('⏳ Fetching LinkedIn jobs…');
+    console.log('⏳ Fetching LinkedIn jobs via API...');
     const linkedInRes = await axios.get(LINKEDIN_API_URL, { headers: HEADERS });
     const linkedInJobs = normalizeLinkedInJobs(linkedInRes.data, remoteOkJobs.length + 1);
 
     await sleep(1000);
 
-    console.log('⏳ Fetching Indeed jobs…');
-    const indeedJobsRaw = await scrapeIndeedJobs();
-    const indeedJobs = normalizeIndeedJobs(indeedJobsRaw, remoteOkJobs.length + linkedInJobs.length + 1);
+    console.log('⏳ Fetching Indeed jobs via API...');
+    const indeedRaw = await scrapeIndeedJobs();
+    const indeedJobs = normalizeIndeedJobs(indeedRaw, remoteOkJobs.length + linkedInJobs.length + 1);
 
     const allJobs = [...remoteOkJobs, ...linkedInJobs, ...indeedJobs];
+    
     fs.writeFileSync(`${__dirname}/jobs.json`, JSON.stringify(allJobs, null, 2), 'utf-8');
-    console.log(`✅ Scraped ${allJobs.length} total jobs from RemoteOK, LinkedIn, and Indeed.`);
+    console.log(`✅ Scraped and saved ${allJobs.length} jobs successfully.`);
   } catch (err) {
-    console.error('❌ Error scraping jobs:', err.message);
+    console.error('❌ Error:', err.message);
   }
 };
 

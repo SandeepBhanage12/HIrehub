@@ -10,7 +10,7 @@ dotenv.config();
 const authRoutes = require('./routes/auth');
 const jobRoutes = require('./routes/jobs');
 const savedJobRoutes = require('./routes/savedJobs');
-//const scrapeJobs = require('./data/scraper'); // scraper function
+const scrapeJobs = require('./data/scraper'); // scraper function
 const app = express();
 
 // Middleware
@@ -50,7 +50,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
-    //await scrapeJobs();
+    await scrapeJobs();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
