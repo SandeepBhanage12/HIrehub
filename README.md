@@ -5,10 +5,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/last-commit/your-username/hirehub?color=blue&style=for-the-badge" alt="last commit"/>
-  <img src="https://img.shields.io/github/languages/count/your-username/hirehub?style=for-the-badge" alt="languages"/>
-  <img src="https://img.shields.io/github/languages/top/your-username/hirehub?color=yellow&style=for-the-badge" alt="top language"/>
-  <img src="https://img.shields.io/github/repo-size/your-username/hirehub?style=for-the-badge" alt="repo size"/>
+  <img src="https://img.shields.io/github/last-commit/SandeepBhanage12/hirehub?color=blue&style=for-the-badge" alt="last commit"/>
+  <img src="https://img.shields.io/github/languages/count/SandeepBhanage12/hirehub?style=for-the-badge" alt="languages"/>
+  <img src="https://img.shields.io/github/languages/top/SandeepBhanage12/hirehub?color=yellow&style=for-the-badge" alt="top language"/>
+  <img src="https://img.shields.io/github/repo-size/SandeepBhanage12/hirehub?style=for-the-badge" alt="repo size"/>
 </p>
 
 ---
@@ -57,13 +57,31 @@ Before running the project, ensure you have installed:
 
 ---
 
-## 🚀 Setup
+
+## ⚙️ Setup & Run
+
+### 1️⃣ Clone the Repository
+
+git clone https://github.com/your-username/hirehub.git
+cd hirehub
 
 ### 🔹 Backend Setup
 
-```bash
-# Navigate to backend
+
+## Navigate to backend
 cd backend
 
-# Install dependencies
+## Install dependencies
 npm install
+
+## cd backend
+- python -m venv venv
+- venv\Scripts\activate   # for Windows
+- pip install -r requirements.txt
+- python app.py
+
+## cd frontend
+-- npm install
+-- npm start
+
+
