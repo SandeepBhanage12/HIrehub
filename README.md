@@ -81,7 +81,8 @@ npm install
 - python app.py
 
 ## cd frontend
--- npm install
--- npm start
+- npm install
+- npm start
+
 
 
